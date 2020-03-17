@@ -66,3 +66,58 @@ test('clicking button increments counter display', () => {
     const counterDisplay = findByTestAttr(wrapper, 'counter-display')
     expect(counterDisplay.text()).toContain(counter + 1) //don't forget to evoke text i.e. text()
 })
+
+test('render decrement button', () => {
+    const wrapper = setup()
+    const decrementButton = findByTestAttr(wrapper, 'decrement-button')
+    expect(decrementButton.length).toBe(1)
+})
+
+test('click decrementButton decrements counter display', () => {
+    const counter = 7
+    const wrapper = setup(null, { counter })
+    const button = findByTestAttr(wrapper, 'decrement-button')
+    button.simulate('click')
+    const counterDisplay = findByTestAttr(wrapper, 'counter-display')
+    expect(counterDisplay.text()).toContain(counter - 1)
+})
+
+test('click decrementButton will no go below 0', () => {
+    const counter = 0
+    const wrapper = setup(null, { counter })
+    const button = findByTestAttr(wrapper, 'decrement-button')
+    button.simulate('click')
+    const counterDisplay = findByTestAttr(wrapper, 'counter-display')
+    expect(counterDisplay.text()).toContain(0)
+})
+
+test('display an error message when counter is trying to go below zero', () => {
+    const counter = 0
+    const wrapper = setup(null, { counter })
+    const button = findByTestAttr(wrapper, 'decrement-button')
+    button.simulate('click')
+    const errorMessage = findByTestAttr(wrapper, 'errorMessage')
+    expect(errorMessage.text()).toBe("The counter can't go below zero")
+})
+
+test('not render error message when counter is not going below zero', () => {
+    const counter = 2
+    const wrapper = setup(null, { counter })
+    const button = findByTestAttr(wrapper, 'decrement-button')
+    button.simulate('click')
+    const errorMessage = findByTestAttr(wrapper, 'errorMessage')
+    expect(errorMessage.length).toBe(0)
+})
+
+test('the error is not rendered after increment button is clicked', () => {
+    const counter = 0
+    const wrapper = setup(null, { counter })
+    const decrementButton = findByTestAttr(wrapper, 'decrement-button')
+    decrementButton.simulate('click')
+    let errorMessage = findByTestAttr(wrapper, 'errorMessage')
+    expect(errorMessage.length).toBe(1)
+    const incrementButton = findByTestAttr(wrapper, 'increment-button')
+    incrementButton.simulate('click')
+    errorMessage = findByTestAttr(wrapper, 'errorMessage')
+    expect(errorMessage.length).toBe(0)
+})
